@@ -1,0 +1,187 @@
+import 'dart:convert';
+
+import 'package:avatar_glow/avatar_glow.dart';
+import 'package:flutter/material.dart';
+import 'package:internet_speed_test/internet_speed_test.dart';
+import 'package:internet_speed_test/callbacks_enum.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../model/result.dart';
+import '../shared/gauge.dart';
+import '../shared/result_widget.dart';
+
+class Speed extends StatefulWidget {
+  final String connectionType;
+  const Speed({ Key? key, required this.connectionType }) : super(key: key);
+
+  @override
+  State<Speed> createState() => _SpeedState();
+}
+
+class _SpeedState extends State<Speed> {
+  final internetSpeedTest = InternetSpeedTest();
+  double transferRateState = 0.0;
+  String unitText = 'Mbps';
+  double downloadSpeed = 0.0;
+  double uploadSpeed = 0.0;
+  bool isTesting = false;
+  bool isLoading = false;
+  double containerWidth = 0.0;
+  double containerHeight = 0.0;
+  DateTime now = DateTime.now();
+
+  void _onPressTestConnection() async {
+    setState(() {
+      isLoading = true;
+    });
+    await Future.delayed(const Duration(milliseconds: 4000));
+    setState((){ 
+      isTesting = true;
+      containerHeight = 250;
+      containerWidth = 250;
+    });
+    await Future.delayed(const Duration(milliseconds: 5000));
+    internetSpeedTest.startDownloadTesting(
+      onDone: (double transferRate, SpeedUnit unit) async {
+          setState(() {
+            unitText = unit == SpeedUnit.Kbps ? 'Kbps' : 'Mbps';
+            transferRateState = 0.0;
+            downloadSpeed = transferRate;
+          });
+          await Future.delayed(const Duration(milliseconds: 500));
+          internetSpeedTest.startUploadTesting(
+            onDone: (double transferRate, SpeedUnit unit) async {
+              setState(() {
+                unitText = unit == SpeedUnit.Kbps ? 'Kbps' : 'Mbps';
+                transferRateState = 0.0;
+                uploadSpeed = transferRate;
+              });
+
+              await Future.delayed(const Duration(milliseconds: 4000));
+              final prefs = await SharedPreferences.getInstance();
+              final String? actions = prefs.getString('results');
+              if(actions != null){
+                final decoded = jsonDecode(actions.toString());
+                final List<Result> list = List<Result>.from( decoded.map((i) => Result.fromJson(i)));
+                Result res = Result(
+                  type: widget.connectionType,
+                  date: DateFormat('yMd').format(now),
+                  time: DateFormat('jm').format(now),
+                  download: downloadSpeed, 
+                  upload: uploadSpeed
+                );
+                list.add(res);
+                await prefs.setString('results', jsonEncode(list));
+              }
+              else{
+                Result res = Result(
+                  type: widget.connectionType,
+                  date: DateFormat('yMd').format(now),
+                  time: DateFormat('jm').format(now),
+                  download: downloadSpeed, 
+                  upload: uploadSpeed
+                );
+                List<Result> result = [ res ];
+                await prefs.setString('results', jsonEncode(result));
+              }
+
+              setState(() {
+                isTesting = false;
+                isLoading = false;
+                containerHeight = 0.0;
+                containerWidth = 0.0;
+                uploadSpeed = 0.0;
+                downloadSpeed = 0.0;
+              });
+              Navigator.pushNamed(context, '/results');
+
+            },
+            onProgress: (double percent, double transferRate, SpeedUnit unit) {
+              setState(() {
+                unitText = unit == SpeedUnit.Kbps ? 'Kbps' : 'Mbps';
+                transferRateState = transferRate;
+              });
+            },
+            onError: (String errorMessage, String speedTestError) {
+              print(errorMessage);
+              print(speedTestError);
+            },
+          );
+
+      },
+      onProgress: (double percent, double transferRate, SpeedUnit unit) {
+          setState(() {
+            unitText = unit == SpeedUnit.Kbps ? 'Kbps' : 'Mbps';
+            transferRateState = transferRate;
+          });
+      },
+      onError: (String errorMessage, String speedTestError) {
+        print(errorMessage);
+        print(speedTestError);
+      },
+    );  
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Center(
+          child: Column(
+            // mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(height: 30.0,),
+              ResultWidget(unitText: unitText, isTesting: isTesting, downloadSpeed: downloadSpeed, uploadSpeed: uploadSpeed),
+              const SizedBox(height: 100.0,),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 500),
+                height: containerHeight,
+                width: containerWidth,
+                child: isTesting ? Gauge(transferRateState: transferRateState, unitText: unitText,) : null,
+              ),
+              
+              Container(
+                child: isTesting ? null : SizedBox(
+                  height: 250,
+                  width: 250,
+                  child: isLoading ? 
+                    const CircularProgressIndicator(
+                      semanticsLabel: 'Connecting',
+                    )
+                   :
+                    AvatarGlow(
+                      glowColor: Colors.blue,
+                      endRadius: 140.0,
+                      duration: const Duration(milliseconds: 2000),
+                      repeat: true,
+                      repeatPauseDuration: const Duration(milliseconds: 100),
+                      child: Material(
+                        shape: const CircleBorder(),
+                        child: ElevatedButton(
+                          onPressed: (){ 
+                            _onPressTestConnection();
+                          },
+                          child: const Text(
+                            'GO',
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              letterSpacing: 3.0
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            shape: const CircleBorder(),
+                            padding: const EdgeInsets.all(70),
+                            primary: const Color.fromARGB(255, 20, 21, 38),
+                            side: const BorderSide( width: 3.0, color: Colors.blue)
+                          ),
+                        ),
+                      ),
+                    ),
+                ),
+              ),
+            ],
+          ),
+        ),
+    );
+  }
+}
