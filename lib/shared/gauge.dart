@@ -53,7 +53,9 @@ class Gauge extends StatelessWidget {
               enableAnimation: true, 
               // color: Colors.blue
               gradient: const SweepGradient(
-                colors: <Color>[Color.fromARGB(255, 0, 164, 223), Color.fromARGB(255, 23, 187, 130)],
+                colors: <Color>[
+                  Color.fromARGB(255, 0, 164, 223), Color.fromARGB(255, 23, 187, 130)
+                ],
                 stops: <double>[0.25, 0.75]
               )
             )

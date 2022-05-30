@@ -68,114 +68,118 @@ class _MyResultsState extends State<MyResults> {
             )
           ],
         ),
-        Table(
-          defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-          children: [
-            TableRow(
+        Expanded(
+          child: SingleChildScrollView(
+            child: Table(
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: [
-                Container( 
-                  padding: const EdgeInsets.fromLTRB(25.0, 0.0, 0.0, 0.0),
-                  height: 40.0, 
-                  color: const Color.fromRGBO(55, 56, 80, 1), 
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text('Type', style: TextStyle(color: Colors.white60)),
-                    ],
-                  )
-                ),
-                 Container( 
-                  height: 40.0, 
-                  color: const Color.fromRGBO(55, 56, 80, 1),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text('Date', style: TextStyle(color: Colors.white60)),
-                    ],
-                  )
-                ),
-                Container(
-                   height: 40.0, 
-                  color: const Color.fromRGBO(55, 56, 80, 1),
-                  child: Row(
-                    children: const [
-                      ImageIcon(
-                        AssetImage('assets/icons/download.png'),
-                        color: Colors.white60,
-                      ),
-                      SizedBox(width: 2.0,),
-                      Text('Mbps', style: TextStyle(color: Colors.white60))
-                    ],
-                  ),
-                ),
-                Container(
-                  height: 40.0, 
-                  color: const Color.fromRGBO(55, 56, 80, 1), 
-                  child: Row(
-                    children: const [
-                      ImageIcon(
-                        AssetImage('assets/icons/upload.png'),
-                        color: Colors.white60,
-                      ),
-                      SizedBox(width: 2.0,),
-                      Text('Mbps', style: TextStyle(color: Colors.white60))
-                    ],
-                  ),
-                )
-              ]
-            ),
-            for(var result in results) TableRow(children: [
-              Container(
-                padding: const EdgeInsets.fromLTRB(25.0, 12.0, 0.0, 12.0),
-                alignment: Alignment.centerLeft,
-                child: ImageIcon(
-                  AssetImage('assets/icons/${result.type}.png'),
-                  color: Colors.white60,
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 0.0),
-                alignment: Alignment.centerLeft,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+                TableRow(
                   children: [
-                    Text(
-                      result.date,
-                      style: const TextStyle(
-                        color: Colors.white
-                      ),
-                    ),
-                    const SizedBox(height: 2.0,),
-                    Text(
-                      result.time,
-                      style: const TextStyle(
-                        color: Colors.white
+                    Container( 
+                      padding: const EdgeInsets.fromLTRB(25.0, 0.0, 0.0, 0.0),
+                      height: 40.0, 
+                      color: const Color.fromRGBO(55, 56, 80, 1), 
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text('Type', style: TextStyle(color: Colors.white60)),
+                        ],
                       )
                     ),
-                  ],
+                     Container( 
+                      height: 40.0, 
+                      color: const Color.fromRGBO(55, 56, 80, 1),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text('Date', style: TextStyle(color: Colors.white60)),
+                        ],
+                      )
+                    ),
+                    Container(
+                       height: 40.0, 
+                      color: const Color.fromRGBO(55, 56, 80, 1),
+                      child: Row(
+                        children: const [
+                          ImageIcon(
+                            AssetImage('assets/icons/download.png'),
+                            color: Colors.white60,
+                          ),
+                          SizedBox(width: 2.0,),
+                          Text('Mbps', style: TextStyle(color: Colors.white60))
+                        ],
+                      ),
+                    ),
+                    Container(
+                      height: 40.0, 
+                      color: const Color.fromRGBO(55, 56, 80, 1), 
+                      child: Row(
+                        children: const [
+                          ImageIcon(
+                            AssetImage('assets/icons/upload.png'),
+                            color: Colors.white60,
+                          ),
+                          SizedBox(width: 2.0,),
+                          Text('Mbps', style: TextStyle(color: Colors.white60))
+                        ],
+                      ),
+                    )
+                  ]
                 ),
-              ),
-              Text(
-                result.download.toString(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 22.0,
-                  fontWeight: FontWeight.w500
-                )
-              ),
-              Text(
-                result.upload.toString(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 22.0,
-                  fontWeight: FontWeight.w500
-                )
-              ),
-            ])
-          ],
+                for(var result in results) TableRow(children: [
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(25.0, 12.0, 0.0, 12.0),
+                    alignment: Alignment.centerLeft,
+                    child: ImageIcon(
+                      AssetImage('assets/icons/${result.type}.png'),
+                      color: Colors.white60,
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 0.0),
+                    alignment: Alignment.centerLeft,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          result.date,
+                          style: const TextStyle(
+                            color: Colors.white
+                          ),
+                        ),
+                        const SizedBox(height: 2.0,),
+                        Text(
+                          result.time,
+                          style: const TextStyle(
+                            color: Colors.white
+                          )
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    result.download.toString(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.w500
+                    )
+                  ),
+                  Text(
+                    result.upload.toString(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.w500
+                    )
+                  ),
+                ])
+              ],
+            ),
+          ),
         ),
       ],
     );

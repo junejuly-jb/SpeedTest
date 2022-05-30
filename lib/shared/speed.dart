@@ -13,7 +13,9 @@ import '../shared/result_widget.dart';
 
 class Speed extends StatefulWidget {
   final String connectionType;
-  const Speed({ Key? key, required this.connectionType }) : super(key: key);
+  final String phoneModel;
+  final String isp;
+  const Speed({ Key? key, required this.connectionType, required this.phoneModel, required this.isp}) : super(key: key);
 
   @override
   State<Speed> createState() => _SpeedState();
@@ -32,95 +34,111 @@ class _SpeedState extends State<Speed> {
   DateTime now = DateTime.now();
 
   void _onPressTestConnection() async {
-    setState(() {
-      isLoading = true;
-    });
-    await Future.delayed(const Duration(milliseconds: 4000));
-    setState((){ 
-      isTesting = true;
-      containerHeight = 250;
-      containerWidth = 250;
-    });
-    await Future.delayed(const Duration(milliseconds: 5000));
-    internetSpeedTest.startDownloadTesting(
-      onDone: (double transferRate, SpeedUnit unit) async {
-          setState(() {
-            unitText = unit == SpeedUnit.Kbps ? 'Kbps' : 'Mbps';
-            transferRateState = 0.0;
-            downloadSpeed = transferRate;
-          });
-          await Future.delayed(const Duration(milliseconds: 500));
-          internetSpeedTest.startUploadTesting(
-            onDone: (double transferRate, SpeedUnit unit) async {
-              setState(() {
-                unitText = unit == SpeedUnit.Kbps ? 'Kbps' : 'Mbps';
-                transferRateState = 0.0;
-                uploadSpeed = transferRate;
-              });
+    if(widget.connectionType == 'none'){
+      return;
+    }else{
+      setState(() {
+        isLoading = true;
+      });
+      await Future.delayed(const Duration(milliseconds: 3000));
+      setState((){ 
+        isTesting = true;
+        containerHeight = 250;
+        containerWidth = 250;
+      });
+      await Future.delayed(const Duration(milliseconds: 5000));
+      internetSpeedTest.startDownloadTesting(
+        onDone: (double transferRate, SpeedUnit unit) async {
+            String strDSTransfer = transferRate.toStringAsFixed(2);
+            double convertedDS = double.parse(strDSTransfer);
+            setState(() {
+              unitText = unit == SpeedUnit.Kbps ? 'Kbps' : 'Mbps';
+              transferRateState = 0.0;
+              downloadSpeed = convertedDS;
+            });
+            await Future.delayed(const Duration(milliseconds: 500));
+            internetSpeedTest.startUploadTesting(
+              onDone: (double transferRate, SpeedUnit unit) async {
+                String strUSTransfer = transferRate.toStringAsFixed(2);
+                double convertedUS = double.parse(strUSTransfer);
+                setState(() {
+                  unitText = unit == SpeedUnit.Kbps ? 'Kbps' : 'Mbps';
+                  transferRateState = 0.0;
+                  uploadSpeed = convertedUS;
+                });
 
-              await Future.delayed(const Duration(milliseconds: 4000));
-              final prefs = await SharedPreferences.getInstance();
-              final String? actions = prefs.getString('results');
-              if(actions != null){
-                final decoded = jsonDecode(actions.toString());
-                final List<Result> list = List<Result>.from( decoded.map((i) => Result.fromJson(i)));
-                Result res = Result(
-                  type: widget.connectionType,
-                  date: DateFormat('yMd').format(now),
-                  time: DateFormat('jm').format(now),
-                  download: downloadSpeed, 
-                  upload: uploadSpeed
-                );
-                list.add(res);
-                await prefs.setString('results', jsonEncode(list));
-              }
-              else{
-                Result res = Result(
-                  type: widget.connectionType,
-                  date: DateFormat('yMd').format(now),
-                  time: DateFormat('jm').format(now),
-                  download: downloadSpeed, 
-                  upload: uploadSpeed
-                );
-                List<Result> result = [ res ];
-                await prefs.setString('results', jsonEncode(result));
-              }
+                await Future.delayed(const Duration(milliseconds: 4000));
+                final prefs = await SharedPreferences.getInstance();
+                final String? actions = prefs.getString('results');
+                if(actions != null){
+                  final decoded = jsonDecode(actions.toString());
+                  final List<Result> list = List<Result>.from( decoded.map((i) => Result.fromJson(i)));
+                  Result res = Result(
+                    type: widget.connectionType,
+                    date: DateFormat('yMd').format(now),
+                    time: DateFormat('jm').format(now),
+                    download: downloadSpeed, 
+                    upload: uploadSpeed
+                  );
+                  list.add(res);
+                  await prefs.setString('results', jsonEncode(list));
+                }
+                else{
+                  Result res = Result(
+                    type: widget.connectionType,
+                    date: DateFormat('yMd').format(now),
+                    time: DateFormat('jm').format(now),
+                    download: downloadSpeed, 
+                    upload: uploadSpeed
+                  );
+                  List<Result> result = [ res ];
+                  await prefs.setString('results', jsonEncode(result));
+                }
 
-              setState(() {
-                isTesting = false;
-                isLoading = false;
-                containerHeight = 0.0;
-                containerWidth = 0.0;
-                uploadSpeed = 0.0;
-                downloadSpeed = 0.0;
-              });
-              Navigator.pushNamed(context, '/results');
+                Navigator.pushNamed(context, '/results', arguments: {
+                  "download": downloadSpeed,
+                  "upload": uploadSpeed,
+                  "date": DateFormat('yMd').format(now),
+                  "time": DateFormat('jm').format(now),
+                  "connectionType": widget.connectionType,
+                  "phoneModel": widget.phoneModel,
+                  "isp": widget.isp
+                });
 
-            },
-            onProgress: (double percent, double transferRate, SpeedUnit unit) {
-              setState(() {
-                unitText = unit == SpeedUnit.Kbps ? 'Kbps' : 'Mbps';
-                transferRateState = transferRate;
-              });
-            },
-            onError: (String errorMessage, String speedTestError) {
-              print(errorMessage);
-              print(speedTestError);
-            },
-          );
+                setState(() {
+                  isTesting = false;
+                  isLoading = false;
+                  containerHeight = 0.0;
+                  containerWidth = 0.0;
+                  uploadSpeed = 0.0;
+                  downloadSpeed = 0.0;
+                });
+              },
+              onProgress: (double percent, double transferRate, SpeedUnit unit) {
+                setState(() {
+                  unitText = unit == SpeedUnit.Kbps ? 'Kbps' : 'Mbps';
+                  transferRateState = transferRate;
+                });
+              },
+              onError: (String errorMessage, String speedTestError) {
+                print(errorMessage);
+                print(speedTestError);
+              },
+            );
 
-      },
-      onProgress: (double percent, double transferRate, SpeedUnit unit) {
-          setState(() {
-            unitText = unit == SpeedUnit.Kbps ? 'Kbps' : 'Mbps';
-            transferRateState = transferRate;
-          });
-      },
-      onError: (String errorMessage, String speedTestError) {
-        print(errorMessage);
-        print(speedTestError);
-      },
-    );  
+        },
+        onProgress: (double percent, double transferRate, SpeedUnit unit) {
+            setState(() {
+              unitText = unit == SpeedUnit.Kbps ? 'Kbps' : 'Mbps';
+              transferRateState = transferRate;
+            });
+        },
+        onError: (String errorMessage, String speedTestError) {
+          print(errorMessage);
+          print(speedTestError);
+        },
+      );  
+    }
   }
 
   @override

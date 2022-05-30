@@ -134,7 +134,9 @@ Future<void> _checkPermission() async {
           ],
         )
       ),
-      body: pageState == 'speed' ? Speed(connectionType: providerState) : const MyResults(),
+      body: pageState == 'speed' ? 
+        Speed(connectionType: providerState, phoneModel: phoneModel ?? "", isp: isp ?? "") : 
+        const MyResults(),
       bottomNavigationBar: ClipRRect(
         borderRadius: const BorderRadius.only(
           topRight: Radius.circular(25),

@@ -5,6 +5,10 @@ class ResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    Map data = ModalRoute.of(context)!.settings.arguments as Map;
+    print(data);
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 20, 21, 38),
       appBar: AppBar(
@@ -25,100 +29,135 @@ class ResultScreen extends StatelessWidget {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const SizedBox(height: 50.0,),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Column(
-                  children: const [
-                    SizedBox(
-                      height: 50,
-                      width: 50,
-                      child: FittedBox(
-                        fit: BoxFit.cover,
-                        child: ImageIcon(
-                          AssetImage('assets/icons/down-big.png'),
-                          color: Color.fromARGB(255, 106, 255, 243),
-                        )
+                Expanded(
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: FittedBox(
+                          fit: BoxFit.cover,
+                          child: ImageIcon(
+                            AssetImage('assets/icons/ping.png'),
+                            color: Color.fromARGB(255, 255, 243, 142),
+                          )
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10.0),
-                      child: Text('80 Mbps',
-                        style: TextStyle( color: Colors.white54, fontSize: 17.0),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 3.0),
+                        child: Text('PING', style: TextStyle(color: Colors.white54, letterSpacing: 1.0, fontSize: 12.0),),
                       ),
-                    )
-                  ],
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Text('80',
+                            style: TextStyle( color: Colors.white, fontSize: 18.0),
+                          ),
+                          Text('ms', style: TextStyle( color: Colors.white54, fontSize: 14.0),)
+                        ],
+                      )
+                    ],
+                  ),
                 ),
-                Column(
-                  children: const [
-                    SizedBox(
-                      height: 50,
-                      width: 50,
-                      child: FittedBox(
-                        fit: BoxFit.cover,
-                        child: ImageIcon(
-                          AssetImage('assets/icons/up-big.png'),
-                          color: Color.fromARGB(255, 149, 90, 201),
-                        )
+                Expanded(
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: FittedBox(
+                          fit: BoxFit.cover,
+                          child: ImageIcon(
+                            AssetImage('assets/icons/down-big.png'),
+                            color: Color.fromARGB(255, 106, 255, 243),
+                          )
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10.0),
-                      child: Text('80 Mbps',
-                        style: TextStyle( color: Colors.white54, fontSize: 17.0),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 3.0),
+                        child: Text('DOWNLOAD', style: TextStyle(color: Colors.white54, letterSpacing: 1.0, fontSize: 12.0),),
                       ),
-                    )
-                  ],
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(data['download'].toString(),
+                            style: const TextStyle( color: Colors.white, fontSize: 18.0),
+                          ),
+                          const Text('Mbps', style: TextStyle( color: Colors.white54, fontSize: 14.0),)
+                        ],
+                      )
+                    ],
+                  ),
                 ),
-                Column(
-                  children: const [
-                    SizedBox(
-                      height: 50,
-                      width: 50,
-                      child: FittedBox(
-                        fit: BoxFit.cover,
-                        child: ImageIcon(
-                          AssetImage('assets/icons/up-big.png'),
-                          color: Color.fromARGB(255, 149, 90, 201),
-                        )
+                Expanded(
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: FittedBox(
+                          fit: BoxFit.cover,
+                          child: ImageIcon(
+                            AssetImage('assets/icons/up-big.png'),
+                            color: Color.fromARGB(255, 149, 90, 201),
+                          )
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10.0),
-                      child: Text('80 Mbps',
-                        style: TextStyle( color: Colors.white54, fontSize: 18.0),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 3.0),
+                        child: Text('UPLOAD', style: TextStyle(color: Colors.white54, letterSpacing: 1.0, fontSize: 12.0),),
                       ),
-                    )
-                  ],
-                )
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(data['upload'].toString(),
+                            style: const TextStyle( color: Colors.white, fontSize: 18.0),
+                          ),
+                          const Text('Mbps', style: TextStyle( color: Colors.white54, fontSize: 14.0),)
+                        ],
+                      )
+                    ],
+                  ),
+                ),
               ],
             ),
-            const SizedBox(height: 80.0,),
+            const SizedBox(height: 50.0,),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const ImageIcon(
-                  AssetImage('assets/icons/wifi.png'),
-                  color: Colors.white,
+                Container(
+                  // margin: EdgeInsets.all(20.0),
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100),
+                    border: Border.all(width: 2, color: Colors.white)
+                  ),
+                  child: ImageIcon(
+                    AssetImage('assets/icons/${data['connectionType']}.png'),
+                    color: Colors.white,
+                  ),
                 ),
                 const SizedBox(width: 25.0,),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text('GLOBE', style: TextStyle( color: Colors.white, fontSize: 18.0),),
-                    SizedBox(height: 5.0,),
-                    Text('YAL-L21', style: TextStyle( color: Colors.white38, fontWeight: FontWeight.w300),)
+                  children: [
+                    Text(data['isp'], style: const TextStyle( color: Colors.white, fontSize: 18.0),),
+                    const SizedBox(height: 5.0,),
+                    Text(data['phoneModel'], style: const TextStyle( color: Colors.white38, fontWeight: FontWeight.w300),)
                   ],
                 ),
                 const SizedBox(width: 25.0,),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text('12/01/12', style: TextStyle( color: Colors.white),),
-                    SizedBox(height: 5.0,),
-                    Text('Friday 20, 2022', style: TextStyle( color: Colors.white),)
+                  children: [
+                    Text(data['date'], style: const TextStyle( color: Colors.white),),
+                    const SizedBox(height: 5.0,),
+                    Text(data['time'], style: const TextStyle( color: Colors.white),)
                   ],
                 )
               ],
