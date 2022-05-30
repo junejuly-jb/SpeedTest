@@ -47,7 +47,13 @@ dependencies:
   wifi_info_flutter: ^2.0.2
   carrier_info: ^2.0.5
   permission_handler: ^8.0.0+2
-  
+  flutter_native_splash: ^2.0.1+1
+  dart_ping: ^6.1.2
+
+flutter_native_splash:
+  color: "#1C1C2E"
+  image: assets/images/splash.png
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
