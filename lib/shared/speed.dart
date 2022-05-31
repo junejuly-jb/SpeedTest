@@ -41,10 +41,10 @@ class _SpeedState extends State<Speed> {
         context: context, 
         builder: (BuildContext context){
           return AlertDialog(
-            title: Text('No connection'),
-            content: Text('Speed test failed to execute. Please check your internet connection and try again.'),
+            title: const Text('No connection'),
+            content: const Text('Speed test failed to execute. Please check your internet connection and try again.'),
             actions: [
-              TextButton(onPressed: (){ Navigator.pop(context); }, child: Text('Ok'))
+              TextButton(onPressed: (){ Navigator.pop(context); }, child: const Text('Ok'))
             ],
           );
         }
@@ -223,17 +223,6 @@ class _SpeedState extends State<Speed> {
                     ),
                 ),
               ),
-              Container(
-                child: isTesting ? 
-                TextButton(onPressed: (){
-                  setState(() {
-                    isLoading = false;
-                    isTesting = false;
-                    containerHeight = 0.0;
-                    containerWidth = 0.0;
-                  });
-                }, child: Text('Cancel')) : null,
-              )
             ],
           ),
         ),

@@ -56,9 +56,9 @@ class ResultScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(ping.toString(),
-                            style: TextStyle( color: Colors.white, fontSize: 18.0),
+                            style: const TextStyle( color: Colors.white, fontSize: 18.0),
                           ),
-                          Text('ms', style: TextStyle( color: Colors.white54, fontSize: 14.0),)
+                          const Text('ms', style: TextStyle( color: Colors.white54, fontSize: 14.0),)
                         ],
                       )
                     ],

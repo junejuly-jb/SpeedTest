@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speedtest/model/result.dart';
 
@@ -14,7 +15,7 @@ class MyResults extends StatefulWidget {
 
 class _MyResultsState extends State<MyResults> {
 
-  List<Result> results = [];
+  late List<Result> results = [];
   
 
   @override
@@ -35,10 +36,33 @@ class _MyResultsState extends State<MyResults> {
     }
   }
 
-  void removeResults() async {
-    final prefs = await SharedPreferences.getInstance();
-    final success = await prefs.remove('results');
-    print(success);
+  void removeResults() {
+    showDialog(
+      context: context, 
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: const Text('Delete'),
+          content: const Text('Would you like to delete your speed test results?'),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+            TextButton(child: const Text('Delete', style: TextStyle( color: Colors.red ),),
+              onPressed: () async {
+                final prefs = await SharedPreferences.getInstance();
+                final success = await prefs.remove('results');
+                if(success){
+                  setState(() {
+                    results = [];
+                  });
+                }
+                Navigator.pop(context);
+                Fluttertoast.showToast(msg: success ? 'Results deleted successfully' : 'Error while deleting results.');
+              }, 
+            )
+          ],
+        );
+      }
+    );
+    
   }
 
   @override
@@ -69,7 +93,16 @@ class _MyResultsState extends State<MyResults> {
           ],
         ),
         Expanded(
-          child: SingleChildScrollView(
+          child: results.isEmpty ?
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: const [
+              Center( child: Text('No results found.', style: TextStyle( color: Colors.white, fontSize: 22.0),),),
+            ],
+          ) :
+          SingleChildScrollView(
             child: Table(
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: [
