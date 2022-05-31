@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:avatar_glow/avatar_glow.dart';
+import 'package:dart_ping/dart_ping.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_speed_test/internet_speed_test.dart';
 import 'package:internet_speed_test/callbacks_enum.dart';
@@ -32,11 +33,35 @@ class _SpeedState extends State<Speed> {
   double containerWidth = 0.0;
   double containerHeight = 0.0;
   DateTime now = DateTime.now();
+  int? responseTime;
 
   void _onPressTestConnection() async {
-    if(widget.connectionType == 'none'){
-      return;
+    if(widget.connectionType == 'none') {
+      showDialog(
+        context: context, 
+        builder: (BuildContext context){
+          return AlertDialog(
+            title: Text('No connection'),
+            content: Text('Speed test failed to execute. Please check your internet connection and try again.'),
+            actions: [
+              TextButton(onPressed: (){ Navigator.pop(context); }, child: Text('Ok'))
+            ],
+          );
+        }
+      );
     }else{
+      final ping = Ping('google.com', count: 5);
+      Duration sum = const Duration(hours: 0, minutes: 0, seconds: 0);
+      ping.stream.listen((event) {
+        if(event.response != null){
+          sum = sum + event.response!.time!;
+        }
+        else if(event.summary != null){
+          setState(() {
+            responseTime = sum.inMilliseconds;
+          });
+        }
+      });
       setState(() {
         isLoading = true;
       });
@@ -96,6 +121,7 @@ class _SpeedState extends State<Speed> {
                 }
 
                 Navigator.pushNamed(context, '/results', arguments: {
+                  "responseTime": responseTime,
                   "download": downloadSpeed,
                   "upload": uploadSpeed,
                   "date": DateFormat('yMd').format(now),
@@ -197,6 +223,17 @@ class _SpeedState extends State<Speed> {
                     ),
                 ),
               ),
+              Container(
+                child: isTesting ? 
+                TextButton(onPressed: (){
+                  setState(() {
+                    isLoading = false;
+                    isTesting = false;
+                    containerHeight = 0.0;
+                    containerWidth = 0.0;
+                  });
+                }, child: Text('Cancel')) : null,
+              )
             ],
           ),
         ),

@@ -7,7 +7,7 @@ class ResultScreen extends StatelessWidget {
   Widget build(BuildContext context) {
 
     Map data = ModalRoute.of(context)!.settings.arguments as Map;
-    print(data);
+    double ping = data['responseTime'] / 5;
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 20, 21, 38),
@@ -54,8 +54,8 @@ class ResultScreen extends StatelessWidget {
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Text('80',
+                        children: [
+                          Text(ping.toString(),
                             style: TextStyle( color: Colors.white, fontSize: 18.0),
                           ),
                           Text('ms', style: TextStyle( color: Colors.white54, fontSize: 14.0),)
