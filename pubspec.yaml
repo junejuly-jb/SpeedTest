@@ -49,6 +49,7 @@ dependencies:
   permission_handler: ^8.0.0+2
   flutter_native_splash: ^2.0.1+1
   dart_ping: ^6.1.2
+  fluttertoast: ^8.0.9
 
 flutter_native_splash:
   color: "#1C1C2E"
